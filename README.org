@@ -1,0 +1,39 @@
+* Mac Os Mojave + DigitalOcean + Shadowsocks VPS搭建&优化 
+之前一直用那些免流的付费vpn翻墙，又慢又不稳定（留下了又懒又笨的泪水），刚好学了《计算机网络》，就想这个自己来配置一个vps，又快又稳定，参考了[[http://daipei.me/posts/cross_firewall_with_digitalocean_shadowsocks/]]，虽然碰到了很多困难，但是最后还是成功了。
+下面我就写一下我的具体操作步骤，以及遇到的一些问题。
+** 注册并租用VPS
+** 配置VPS
+*** 远程登陆服务器
+打开终端输入以下代码(我用的是ipv4的地址，ipv6和private ip好像都不dei行）
+#+begin_src shell
+$ ssh root@[YOUR VPS IP ADDRESS]
+#+end_src
+*** 小麻烦
+按道理以上代码应该能够顺利连接上远程服务器，但是就在我高兴的想要进行下一步的时候，我的ITerm上就出现红色的大❌
+#+begin_src shell
+/Users/anthony/.ssh/config line 3: garbage at end of line; "-%r@%h:%p".
+#+end_src
+what?这个“-%r@%h:%p”是个什么东西，也太鬼畜了吧，我打开~/.ssh/config赶紧看了一眼
+#+begin_src shell
+Host *
+ControlMaster auto
+ControlPath ~/.ssh/master -%r@%h:%p
+ControlPersist = no%
+#+end_src
+网上找了一圈没有任何解答，那咋办吗，直接删掉233
+#+begin_src shell
+ControlPath ~/.ssh/master -%r@%h:%p
+#+end_src
+#+begin_src 
+ControlPath ~/.ssh/master 
+#+end_src
+成功连接！
+*** 配置防火墙 
+**** 1.安装firewalld 
+#+begin_src shell
+$ yum install firewalld firewall-config
+#+end_src
+**** 2.启动firewalld
+#+begin_src shell
+$ systemctl start firewalld
+#+end_src
