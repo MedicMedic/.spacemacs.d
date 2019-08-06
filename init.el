@@ -340,6 +340,13 @@ you should place your code here."
 (setq org-startup-indented t)
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
+
+;; org-mode 代码块
+(require 'org-tempo)
+
+;; escape between evil-insert-mode and evil-normal-mode
+(setq-default evil-escape-key-sequence "jk")
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
