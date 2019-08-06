@@ -194,4 +194,43 @@ $ vi /etc/rc.local
 $ chmod 777 /etc/rc.local
 #+end_src
 这样ss开启自动后台运行就配置好了，下面重启服务器就好了，可以在digitalocean控制面板中重新启动服务器。
+*** 优化
+**** 内核参数优化
+调整内核参数
+修改配置文件 /etc/sysctl.conf
+#+begin_src confg
+fs.file-max = 51200
 
+net.core.rmem_max = 67108864
+net.core.wmem_max = 67108864
+net.core.netdev_max_backlog = 250000
+net.core.somaxconn = 4096
+
+net.ipv4.tcp_syncookies = 1
+net.ipv4.tcp_tw_reuse = 1
+net.ipv4.tcp_tw_recycle = 0
+net.ipv4.tcp_fin_timeout = 30
+net.ipv4.tcp_keepalive_time = 1200
+net.ipv4.ip_local_port_range = 10000 65000
+net.ipv4.tcp_max_syn_backlog = 8192
+net.ipv4.tcp_max_tw_buckets = 5000
+net.ipv4.tcp_fastopen = 3
+net.ipv4.tcp_rmem = 4096 87380 67108864
+net.ipv4.tcp_wmem = 4096 65536 67108864
+net.ipv4.tcp_mtu_probing = 1
+net.ipv4.tcp_congestion_control = hybla
+#+end_src
+运行sysctl -p生效
+#+begin_src shell
+$ sysctl -p
+#+end_src
+**** 锐速加速
+由于本人缺乏Linux方面的知识并且对速度没有太高的要求，因此暂时留坑，不过可以参考以下教程，我觉得讲的还是挺清楚
+[[https://www.cmsky.com/serverspeeder-install/]]
+[[https://www.cnblogs.com/semonxv/p/3816366.html
+]]
+
+
+*** 其他参考文章
+[[https://www.jianshu.com/p/e990897aeaec]]
+[[http://wuchong.me/blog/2015/02/02/shadowsocks-install-and-optimize/]]
