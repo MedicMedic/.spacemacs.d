@@ -345,10 +345,12 @@ you should place your code here."
 (require 'org-tempo)
 
 ;; escape between evil-insert-mode and evil-normal-mode
-(setq-default evil-escape-key-sequence "C-[")
+(setq-default evil-escape-key-sequence "jk")
 
 ;; set org-mode word-wrap
 (add-hook 'org-mode-hook (lambda () (setq truncate-lines nil)))
+;; make chinese input correct
+(setq redisplay-dont-pause nil)
 
 )
 (custom-set-variables
