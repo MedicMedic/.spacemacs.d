@@ -345,7 +345,11 @@ you should place your code here."
 (require 'org-tempo)
 
 ;; escape between evil-insert-mode and evil-normal-mode
-(setq-default evil-escape-key-sequence "jk")
+(setq-default evil-escape-key-sequence "C-[")
+
+;; set org-mode word-wrap
+(add-hook 'org-mode-hook (lambda () (setq truncate-lines nil)))
+
 )
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
