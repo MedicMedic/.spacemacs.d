@@ -31,16 +31,16 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     html
+     rust
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
      ivy
-     helm
      (better-defaults :variables better-defaults-move-to-end-of-code-first t)
      auto-completion
-     better-defaults
      emacs-lisp
      git
      markdown
@@ -49,7 +49,9 @@ values."
      ;;        shell-default-height 30
      ;;        shell-default-position 'bottom)
      spell-checking
+     osx
      syntax-checking
+     emoji
      (chinese :variables
               chinese-enable-fcitx t)
      ;; version-control
@@ -58,12 +60,16 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '()
+   dotspacemacs-additional-packages '(
+                                      ox-hugo
+                                      use-package
+                                      )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
    dotspacemacs-excluded-packages '(
-                                    vi-tilde-fringe)
+                                    vi-tilde-fringe
+                                    )
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
    ;; `used-only' installs only explicitly used packages and uninstall any
@@ -232,7 +238,7 @@ values."
    ;; If non nil the frame is maximized when Emacs starts up.
    ;; Takes effect only if `dotspacemacs-fullscreen-at-startup' is nil.
    ;; (default nil) (Emacs 24.4+ only)
-   dotspacemacs-maximized-at-startup t
+   dotspacemacs-maximized-at-startup nil
    ;; A value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's active or selected.
    ;; Transparency can be toggled through `toggle-transparency'. (default 90)
@@ -329,6 +335,7 @@ you should place your code here."
 (fcitx-prefix-keys-add "M-m") ; M-m is common in Spacemacs
 ;;(setq fcitx-use-dbus t) ; uncomment if you’re using Linux
 ;; remove all keybindings from insert-state keymap,it is VERY VERY important
+(fcitx-prefix-keys-turn-off)
 (setcdr evil-insert-state-map nil)
 
 ;;;把emacs模式下的按键绑定到Insert模式下
@@ -349,10 +356,70 @@ you should place your code here."
 
 ;; set org-mode word-wrap
 (add-hook 'org-mode-hook (lambda () (setq truncate-lines nil)))
-;; make chinese input correct
-(setq redisplay-dont-pause nil)
 
+;; ox-hugo config
+(use-package ox-hugo
+  :ensure t          ;Auto-install the package from Melpa (optional)
+  :after ox)
+
+;; org-hugo capture
+(with-eval-after-load 'org-capture
+  (defun org-hugo-new-subtree-post-capture-template ()
+    "Returns `org-capture' template string for new Hugo post.
+See `org-capture-templates' for more information."
+    (let* (;; http://www.holgerschurig.de/en/emacs-blog-from-org-to-hugo/
+           (date (format-time-string (org-time-stamp-format :long :inactive) (org-current-time)))
+           (title (read-from-minibuffer "Post Title: ")) ;Prompt to enter the post title
+           (fname (org-hugo-slug title)))
+      (mapconcat #'identity
+                 `(
+                   ,(concat "** TODO " title "     :@随笔:")
+                   ":PROPERTIES:"
+                   ,(concat ":EXPORT_FILE_NAME: " fname)
+                   ;; ,(concat ":EXPORT_DATE: " date) ;Enter current date and time
+                   ":END:"
+                   "%?\n")          ;Place the cursor here finally
+                 "\n")))
+
+  (add-to-list 'org-capture-templates
+               '("h"                ;`org-capture' binding + h
+                 "Hugo post"
+                 entry
+                 ;; It is assumed that below file is present in `org-directory'
+                 ;; and that it has a "Blog Ideas" heading. It can even be a
+                 ;; symlink pointing to the actual location of all-posts.org!
+                 (file+headline "~/Blog/0000-posts.org" "INBOX")
+                 (function org-hugo-new-subtree-post-capture-template))))
+
+(defun arthurMao/screenCapture (basename)
+      "Take a screenshot into a time stamped unique-named file in the
+      same directory as the org-buffer/markdown-buffer and insert a link to this file."
+      (interactive "sScreenshot name: ")
+      (if (equal basename "")
+          (setq basename (format-time-string "%Y%m%d_%H%M%S")))
+      (progn
+        (setq final-image-full-path (concat basename ".png"))
+        (setq final-image-directory-path (read-from-minibuffer "Save to(default ~/Blog/static):"))
+        (if (equal final-image-directory-path "")
+            (setq final-image-absolute-path (concat "~/Blog/static/" final-image-full-path))
+          (setq final-image-absolute-path (concat final-image-directory-path final-image-full-path))
 )
+        (call-process-shell-command (format "screencapture -i %s" final-image-absolute-path) nil nil nil)
+        (if (executable-find "convert")
+            (progn
+              (setq resize-command-str (format "convert %s -resize 100% %s" final-image-full-path final-image-full-path))
+              (shell-command-to-string resize-command-str)))
+        (zilongshanren//insert-org-or-md-img-link "~/Blog/static/" (concat basename ".png"))
+        (insert "\n"))
+      )
+(spacemacs/set-leader-keys (kbd "o c") 'arthurMao/screenCapture)
+(defun zilongshanren//insert-org-or-md-img-link (prefix imagename)
+  (if (equal (file-name-extension (buffer-file-name)) "org")
+      (insert (format "[[%s%s]]" prefix imagename))
+    (insert (format "![%s](%s%s)" imagename prefix imagename))))
+
+);; ATTENTION: CLOSING OF USER-CONFIG
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
