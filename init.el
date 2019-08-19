@@ -418,6 +418,8 @@ See `org-capture-templates' for more information."
       (insert (format "[[%s%s]]" prefix imagename))
     (insert (format "![%s](%s%s)" imagename prefix imagename))))
 
+;;在evil-normal模式下绑定C-e移动到行尾
+(define-key evil-normal-state-map (kbd "C-e") 'move-end-of-line)
 );; ATTENTION: CLOSING OF USER-CONFIG
 
 (custom-set-variables
