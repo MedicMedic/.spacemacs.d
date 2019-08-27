@@ -39,7 +39,8 @@ values."
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
      ivy
-     (better-defaults :variables better-defaults-move-to-end-of-code-first t)
+     (better-defaults :variables
+                      better-defaults-move-to-end-of-code-first t)
      auto-completion
      emacs-lisp
      git
@@ -52,6 +53,8 @@ values."
      osx
      syntax-checking
      emoji
+     (java :variables
+           java-backend 'lsp)
      (chinese :variables
               chinese-enable-fcitx t)
      ;; version-control
@@ -315,9 +318,15 @@ before packages are loaded. If you are unsure, you should try in setting them in
         '(("melpa-cn" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
           ("org-cn"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/org/")
           ("gnu-cn"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")))
+
+;;(setq configuration-layer--elpa-archives
+;;      '(("melpa-cn" . "http://elpa.emacs-china.org/melpa/")
+;;        ("org-cn"   . "http://elpa.emacs-china.org/org/")
+;;        ("gnu-cn"   . "http://elpa.emacs-china.org/gnu/")))
   (setq tramp-ssh-controlmaster-options
         "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
   )
+
 
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.
@@ -326,6 +335,17 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
+
+;; mobile org
+  (with-eval-after-load 'org
+    (require 'org-mobile)
+    ;; Set to the location of your Org files on your local system
+    (setq org-directory "~/org")
+    ;; Set to the name of the file where new notes will be stored
+    (setq org-mobile-inbox-for-pull "~/org/flagged.org")
+    ;; Set to <your Dropbox root directory>/MobileOrg.
+    (setq org-mobile-directory "~/Dropbox/Apps/MobileOrg")
+    )
 
 ;;;; -- cofig fctix
 ;; Make sure the following comes before `(fcitx-aggressive-setup)’
@@ -391,6 +411,8 @@ See `org-capture-templates' for more information."
                  (file+headline "~/Blog/0000-posts.org" "INBOX")
                  (function org-hugo-new-subtree-post-capture-template))))
 
+
+
 (defun arthurMao/screenCapture (basename)
       "Take a screenshot into a time stamped unique-named file in the
       same directory as the org-buffer/markdown-buffer and insert a link to this file."
@@ -420,6 +442,42 @@ See `org-capture-templates' for more information."
 
 ;;在evil-normal模式下绑定C-e移动到行尾
 (define-key evil-normal-state-map (kbd "C-e") 'move-end-of-line)
+
+(require 'cc-mode)
+
+(condition-case nil
+    (require 'use-package)
+  (file-error
+   (require 'package)
+   (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+   (package-initialize)
+   (package-refresh-contents)
+   (package-install 'use-package)
+   (require 'use-package)))
+
+(use-package projectile :ensure t)
+(use-package yasnippet :ensure t)
+(use-package lsp-mode :ensure t)
+(use-package hydra :ensure t)
+(use-package company-lsp :ensure t)
+(use-package lsp-ui :ensure t)
+(use-package lsp-java :ensure t :after lsp
+  :config (add-hook 'java-mode-hook 'lsp))
+
+(use-package dap-mode
+  :ensure t :after lsp-mode
+  :config
+  (dap-mode t)
+  (dap-ui-mode t))
+
+(use-package dap-java :after (lsp-java))
+
+(require 'lsp-java-boot)
+
+;; to enable the lenses
+(add-hook 'lsp-mode-hook #'lsp-lens-mode)
+(add-hook 'java-mode-hook #'lsp-java-boot-lens-mode)
+
 );; ATTENTION: CLOSING OF USER-CONFIG
 
 (custom-set-variables
