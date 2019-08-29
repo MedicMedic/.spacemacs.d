@@ -45,7 +45,8 @@ values."
      emacs-lisp
      git
      markdown
-     org
+     (org :variables
+          org-enable-hugo-support t)
      ;; (shell :variables
      ;;        shell-default-height 30
      ;;        shell-default-position 'bottom)
@@ -64,8 +65,15 @@ values."
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages '(
-                                      ox-hugo
                                       use-package
+                                      tree-mode
+                                      lsp-ui
+                                      lsp-mode
+                                      lsp-java
+                                      dash-functional
+                                      dap-mode
+                                      company-lsp
+                                      bui
                                       )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -336,17 +344,6 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
 
-;; mobile org
-  (with-eval-after-load 'org
-    (require 'org-mobile)
-    ;; Set to the location of your Org files on your local system
-    (setq org-directory "~/org")
-    ;; Set to the name of the file where new notes will be stored
-    (setq org-mobile-inbox-for-pull "~/org/flagged.org")
-    ;; Set to <your Dropbox root directory>/MobileOrg.
-    (setq org-mobile-directory "~/Dropbox/Apps/MobileOrg")
-    )
-
 ;;;; -- cofig fctix
 ;; Make sure the following comes before `(fcitx-aggressive-setup)’
 (setq fcitx-active-evil-states '(insert emacs hybrid))
@@ -364,52 +361,27 @@ you should place your code here."
 ;; but [escape] should switch back to normal state
 (define-key evil-insert-state-map [escape] 'evil-normal-state)
 
-(setq org-startup-indented t)
+;; --------config org layer-----------
+(with-eval-after-load 'org
+  (setq org-startup-indented t)
+
+  ;; org-mode 代码块
+  (require 'org-tempo)
+
+  ;; set org-mode word-wrap
+  (add-hook 'org-mode-hook (lambda () (setq truncate-lines nil)))
+
+  (setq org-bullets-bullet-list '("■" "◆" "▲" "▶"))
+
+  )
+
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
 
-;; org-mode 代码块
-(require 'org-tempo)
+
 
 ;; escape between evil-insert-mode and evil-normal-mode
 (setq-default evil-escape-key-sequence "jk")
-
-;; set org-mode word-wrap
-(add-hook 'org-mode-hook (lambda () (setq truncate-lines nil)))
-
-;; ox-hugo config
-(use-package ox-hugo
-  :ensure t          ;Auto-install the package from Melpa (optional)
-  :after ox)
-
-;; org-hugo capture
-(with-eval-after-load 'org-capture
-  (defun org-hugo-new-subtree-post-capture-template ()
-    "Returns `org-capture' template string for new Hugo post.
-See `org-capture-templates' for more information."
-    (let* (;; http://www.holgerschurig.de/en/emacs-blog-from-org-to-hugo/
-           (date (format-time-string (org-time-stamp-format :long :inactive) (org-current-time)))
-           (title (read-from-minibuffer "Post Title: ")) ;Prompt to enter the post title
-           (fname (org-hugo-slug title)))
-      (mapconcat #'identity
-                 `(
-                   ,(concat "** TODO " title "     :@随笔:")
-                   ":PROPERTIES:"
-                   ,(concat ":EXPORT_FILE_NAME: " fname)
-                   ;; ,(concat ":EXPORT_DATE: " date) ;Enter current date and time
-                   ":END:"
-                   "%?\n")          ;Place the cursor here finally
-                 "\n")))
-
-  (add-to-list 'org-capture-templates
-               '("h"                ;`org-capture' binding + h
-                 "Hugo post"
-                 entry
-                 ;; It is assumed that below file is present in `org-directory'
-                 ;; and that it has a "Blog Ideas" heading. It can even be a
-                 ;; symlink pointing to the actual location of all-posts.org!
-                 (file+headline "~/Blog/0000-posts.org" "INBOX")
-                 (function org-hugo-new-subtree-post-capture-template))))
 
 
 
@@ -440,9 +412,9 @@ See `org-capture-templates' for more information."
       (insert (format "[[%s%s]]" prefix imagename))
     (insert (format "![%s](%s%s)" imagename prefix imagename))))
 
-;;在evil-normal模式下绑定C-e移动到行尾
+;;在evil-normal/visual模式下绑定C-e移动到行尾
 (define-key evil-normal-state-map (kbd "C-e") 'move-end-of-line)
-
+(define-key evil-visual-state-map (kbd "C-e") 'move-end-of-line)
 (require 'cc-mode)
 
 (condition-case nil
@@ -477,6 +449,8 @@ See `org-capture-templates' for more information."
 ;; to enable the lenses
 (add-hook 'lsp-mode-hook #'lsp-lens-mode)
 (add-hook 'java-mode-hook #'lsp-java-boot-lens-mode)
+
+(setq lsp-ui-sideline-update-mode 'point)
 
 );; ATTENTION: CLOSING OF USER-CONFIG
 
