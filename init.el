@@ -74,9 +74,10 @@ values."
                                       dap-mode
                                       company-lsp
                                       bui
-				      ivy-posframe
+			                         	      ivy-posframe
                                       all-the-icons
                                       all-the-icons-dired
+                                      all-the-icons-ivy
                                       )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -374,8 +375,8 @@ you should place your code here."
   ;; set org-mode word-wrap
   (add-hook 'org-mode-hook (lambda () (setq truncate-lines nil)))
 
-  (setq org-bullets-bullet-list '("■" "◆" "▲" "▶"))
-
+  ;; enable speed-command to optimize org GTD
+  (setq evil-org-key-theme '(textobjects navigation additional insert todo))
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -496,7 +497,23 @@ you should place your code here."
 ;; apply all-the-icons in dired
 (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
 
+;; dired
+(put 'dired-find-alternate-file 'disabled nil)
 
+;; 延迟加载
+(with-eval-after-load 'dired
+  (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file))
+
+;; use C-x C-j to jump to file path
+(require 'dired-x)
+(require 'all-the-icons)
+
+
+;;
+(use-package all-the-icons-ivy
+  :ensure t
+  :config
+  (all-the-icons-ivy-setup))
 );; =====================ATTENTION: CLOSING OF USER-CONFIG==============================
 
 (custom-set-variables
