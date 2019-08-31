@@ -74,6 +74,9 @@ values."
                                       dap-mode
                                       company-lsp
                                       bui
+				      ivy-posframe
+                                      all-the-icons
+                                      all-the-icons-dired
                                       )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -452,7 +455,49 @@ you should place your code here."
 
 (setq lsp-ui-sideline-update-mode 'point)
 
-);; ATTENTION: CLOSING OF USER-CONFIG
+;; automatically close the minibuffer when it losed focus
+(defun stop-using-minibuffer ()
+  "kill the minibuffer"
+  (when (and (>= (recursion-depth) 1) (active-minibuffer-window))
+    (abort-recursive-edit)))
+
+(add-hook 'mouse-leave-buffer-hook 'stop-using-minibuffer)
+
+
+;; abort company when you need to RET
+(defun moon/return-cancel-completion ()
+  "Cancel completion and return."
+  (interactive)
+  (company-abort)
+  (newline nil t))
+
+(global-set-key (kbd "S-<return>") #'moon/return-cancel-completion)
+
+;; ignore the line wrapping to jump the line
+(with-eval-after-load 'evil
+  (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
+  (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
+  )
+
+
+;; make minibuffer float in center
+(require 'ivy-posframe)
+;; display at `ivy-posframe-style'
+(setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display)))
+;; (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-center)))
+;;(setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-window-center)))
+;; (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-bottom-left)))
+;; (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-window-bottom-left)))
+;; (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-top-center)))
+(setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-point)))
+(ivy-posframe-mode 1)
+
+
+;; apply all-the-icons in dired
+(add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
+
+
+);; =====================ATTENTION: CLOSING OF USER-CONFIG==============================
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
