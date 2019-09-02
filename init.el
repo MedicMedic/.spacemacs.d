@@ -80,6 +80,7 @@ values."
                                       all-the-icons-ivy
                                       hide-mode-line
                                       doom-themes
+                                      helm-ag
                                       )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -396,6 +397,18 @@ you should place your code here."
 
   ;; escape between evil-insert-mode and evil-normal-mode
   (setq-default evil-escape-key-sequence "jk")
+
+
+  ;;在evil-normal/visual模式下绑定C-e移动到行尾
+  (define-key evil-normal-state-map (kbd "C-e") 'move-end-of-line)
+  (define-key evil-visual-state-map (kbd "C-e") 'move-end-of-line)
+
+  ;; ignore the line wrapping to jump the line
+  (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
+  (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
+  (define-key evil-visual-state-map (kbd "j") 'evil-next-visual-line)
+  (define-key evil-visual-state-map (kbd "k") 'evil-previous-visual-line)
+
 )
 
 
@@ -411,16 +424,6 @@ you should place your code here."
 
   ;; enable speed-command to optimize org GTD
   (setq evil-org-key-theme '(textobjects navigation additional insert todo))
-
-  ;;在evil-normal/visual模式下绑定C-e移动到行尾
-  (define-key evil-normal-state-map (kbd "C-e") 'move-end-of-line)
-  (define-key evil-visual-state-map (kbd "C-e") 'move-end-of-line)
-
-  ;; ignore the line wrapping to jump the line
-  (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
-  (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
-  (define-key evil-visual-state-map (kbd "j") 'evil-next-visual-line)
-  (define-key evil-visual-state-map (kbd "k") 'evil-previous-visual-line)
 
   )
 
@@ -582,6 +585,20 @@ you should place your code here."
             (notify-osx "Pomodoro Killed" "One does not simply kill a pomodoro!")))
 
 (require 'org-pomodoro)
+
+(setq load-path (cons (file-truename "~/.emacs.d/") load-path))
+(module-load-p "~/.emacs.d/liberime.so")
+(require 'pyim)
+(require 'posframe)
+(require 'liberime)
+
+(setq default-input-method "pyim")
+(setq pyim-page-tooltip 'posframe)
+(setq pyim-page-length 9)
+
+(liberime-start "/Library/Input Methods/Squirrel.app/Contents/SharedSupport" (file-truename "~/.emacs.d/pyim/rime/"))
+(liberime-select-schema "luna_pinyin_simp")
+(setq pyim-default-scheme 'rime-quanpin)
 );; =====================ATTENTION: CLOSING OF USER-CONFIG==============================
 
 (custom-set-variables
