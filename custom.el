@@ -7,7 +7,21 @@
  '(org-download-display-inline-images nil)
  '(org-export-with-author nil)
  '(org-hugo-section "post")
- '(org-startup-with-inline-images t t)
+ '(org-pomodoro-finished-sound
+   "/Users/anthony/.emacs.d/elpa/develop/org-pomodoro-20190530.1445/resources/bell.wav")
+ '(org-pomodoro-finished-sound-p nil)
+ '(org-pomodoro-length 25)
+ '(org-pomodoro-long-break-length 5)
+ '(org-pomodoro-play-sounds nil)
+ '(org-pomodoro-short-break-length 1)
+ '(org-pomodoro-short-break-sound
+   "/Users/anthony/.emacs.d/elpa/develop/org-pomodoro-20190530.1445/resources/bell.wav")
+ '(org-pomodoro-start-sound
+   "/Users/anthony/.emacs.d/elpa/develop/org-pomodoro-20190530.1445/resources/bell.wav")
+ '(org-pomodoro-ticking-sound
+   "/Users/anthony/.emacs.d/elpa/develop/org-pomodoro-20190530.1445/resources/tick.wav")
+ '(org-pomodoro-ticking-sound-p nil)
+ '(org-startup-with-inline-images t)
  '(org-use-speed-commands nil)
  '(package-selected-packages
    (quote
