@@ -106,6 +106,7 @@ values."
                                     google-translate
                                     epic
                                     fancy-battery
+                                    nyan-mode
                                     )
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
@@ -386,12 +387,17 @@ you should place your code here."
   (setcdr evil-insert-state-map nil)
  )
 
+(with-eval-after-load 'evil
+  ;;;把emacs模式下的按键绑定到Insert模式下
+  (define-key evil-insert-state-map
+    (read-kbd-macro evil-toggle-key) 'evil-emacs-state)
+  ;; but [escape] should switch back to normal state
+  (define-key evil-insert-state-map [escape] 'evil-normal-state)
 
-;;;把emacs模式下的按键绑定到Insert模式下
-(define-key evil-insert-state-map
-  (read-kbd-macro evil-toggle-key) 'evil-emacs-state)
-;; but [escape] should switch back to normal state
-(define-key evil-insert-state-map [escape] 'evil-normal-state)
+  ;; escape between evil-insert-mode and evil-normal-mode
+  (setq-default evil-escape-key-sequence "jk")
+)
+
 
 ;; --------config org layer-----------
 (with-eval-after-load 'org
@@ -405,16 +411,18 @@ you should place your code here."
 
   ;; enable speed-command to optimize org GTD
   (setq evil-org-key-theme '(textobjects navigation additional insert todo))
+
+  ;;在evil-normal/visual模式下绑定C-e移动到行尾
+  (define-key evil-normal-state-map (kbd "C-e") 'move-end-of-line)
+  (define-key evil-visual-state-map (kbd "C-e") 'move-end-of-line)
+
+  ;; ignore the line wrapping to jump the line
+  (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
+  (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
+  (define-key evil-visual-state-map (kbd "j") 'evil-next-visual-line)
+  (define-key evil-visual-state-map (kbd "k") 'evil-previous-visual-line)
+
   )
-
-;; Do not write anything past this comment. This is where Emacs will
-;; auto-generate custom variable definitions.
-
-
-
-;; escape between evil-insert-mode and evil-normal-mode
-(setq-default evil-escape-key-sequence "jk")
-
 
 
 (defun arthurMao/screenCapture (basename)
@@ -444,9 +452,6 @@ you should place your code here."
       (insert (format "[[%s%s]]" prefix imagename))
     (insert (format "![%s](%s%s)" imagename prefix imagename))))
 
-;;在evil-normal/visual模式下绑定C-e移动到行尾
-(define-key evil-normal-state-map (kbd "C-e") 'move-end-of-line)
-(define-key evil-visual-state-map (kbd "C-e") 'move-end-of-line)
 (require 'cc-mode)
 
 (condition-case nil
@@ -502,13 +507,7 @@ you should place your code here."
 
 (global-set-key (kbd "S-<return>") #'moon/return-cancel-completion)
 
-;; ignore the line wrapping to jump the line
-(with-eval-after-load 'evil
-  (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
-  (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
-  (define-key evil-visual-state-map (kbd "j") 'evil-next-visual-line)
-  (define-key evil-visual-state-map (kbd "k") 'evil-previous-visual-line)
-  )
+
 
 
 ;; make minibuffer float in center
@@ -547,17 +546,9 @@ you should place your code here."
 
 
 (with-eval-after-load 'doom-themes
-
-  ;; Global settings (defaults)
-  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+;; Global settings (defaults)
+ (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
         doom-themes-enable-italic t) ; if nil, italics is universally disabled
-
-  ;; Load the theme (doom-one, doom-molokai, etc); keep in mind that each theme
-  ;; may have their own settings.
-  ;; Enable flashing mode-line on errors
-;;  (doom-themes-visual-bell-config)
-;;  (load-theme 'doom-vibrant t)
-;;  (load-theme 'spacemacs-dark t)
 
   ;; or for treemacs users
   (setq doom-themes-treemacs-theme "doom-colors") ; use the colorful treemacs theme
