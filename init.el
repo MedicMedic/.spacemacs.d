@@ -86,6 +86,26 @@ values."
    ;; A list of packages that will not be installed and loaded.
    dotspacemacs-excluded-packages '(
                                     vi-tilde-fringe
+                                    org-projectile org-present orgit orglue
+                                    magit-gh-pulls magit-gitflow
+                                    evil-mc evil-args evil-ediff evil-exchange evil-unimpaired evil-indent-plus
+                                    spacemacs-theme
+                                    helm-flyspell helm-c-yasnippet ace-jump-helm-line helm-make magithub helm-themes helm-swoop helm-spacemacs-help helm-purpose
+                                    company-quickhelp
+                                    skewer-mode
+                                    holy-mode
+                                    livid-mode
+                                    git-gutter git-gutter-fringe
+                                    leuven-theme
+                                    gh-md
+                                    spray
+                                    lorem-ipsum
+                                    symon
+                                    ace-jump-mode
+                                    clang-format
+                                    google-translate
+                                    epic
+                                    fancy-battery
                                     )
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
@@ -353,15 +373,19 @@ explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
 
 ;;;; -- cofig fctix
-;; Make sure the following comes before `(fcitx-aggressive-setup)’
-(setq fcitx-active-evil-states '(insert emacs hybrid))
-;; For Spacemacs use hybrid mode。 默认方式是 '(insert emacs) (fcitx-aggressive-setup) ; 如果要在 minibuffer 里输入中文，就改成
-(fcitx-default-setup)
-(fcitx-prefix-keys-add "M-m") ; M-m is common in Spacemacs
-;;(setq fcitx-use-dbus t) ; uncomment if you’re using Linux
-;; remove all keybindings from insert-state keymap,it is VERY VERY important
-(fcitx-prefix-keys-turn-off)
-(setcdr evil-insert-state-map nil)
+
+(with-eval-after-load 'fcitx
+  ;; Make sure the following comes before `(fcitx-aggressive-setup)’
+  (setq fcitx-active-evil-states '(insert emacs hybrid))
+  ;; For Spacemacs use hybrid mode。 默认方式是 '(insert emacs) (fcitx-aggressive-setup) ; 如果要在 minibuffer 里输入中文，就改成
+  (fcitx-default-setup)
+  (fcitx-prefix-keys-add "M-m") ; M-m is common in Spacemacs
+  ;;(setq fcitx-use-dbus t) ; uncomment if you’re using Linux
+  ;; remove all keybindings from insert-state keymap,it is VERY VERY important
+  (fcitx-prefix-keys-turn-off)
+  (setcdr evil-insert-state-map nil)
+ )
+
 
 ;;;把emacs模式下的按键绑定到Insert模式下
 (define-key evil-insert-state-map
