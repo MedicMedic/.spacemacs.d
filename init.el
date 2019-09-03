@@ -375,6 +375,27 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
 
+;; -----------------------One day, may be I will come back to use pyim with rime--------------------------------------------
+  ;; (setq load-path (cons (file-truename "~/.emacs.d/") load-path))
+
+  ;; (require 'pyim)
+  ;; (require 'posframe)
+  ;; (require 'liberime)
+
+  ;; (setq default-input-method "pyim")
+  ;; (setq pyim-page-tooltip 'posframe)
+  ;; (setq pyim-page-length 9)
+
+  ;; ;; 加快pyim缓冲速度
+  ;; (setq pyim-dcache-backend 'pyim-dregcache)
+
+  ;; ;; 补全框模式改为垂直模式
+  ;; (setq pyim-page-style 'vertical)
+
+  ;; (liberime-start "/Library/Input Methods/Squirrel.app/Contents/SharedSupport" (file-truename "~/.emacs.d/pyim/rime/"))
+  ;; (liberime-select-schema "luna_pinyin_simp")
+  ;; (setq pyim-default-scheme 'rime-quanpin)
+;; -------------------------------------------------------------------------------------------------------------------------
 
 (defmacro k-time (&rest body)
   "Measure and return the time it takes evaluating BODY."
@@ -409,7 +430,6 @@ you should place your code here."
 
   ;; escape between evil-insert-mode and evil-normal-mode
   (setq-default evil-escape-key-sequence "jk")
-
 
   ;;在evil-normal/visual模式下绑定C-e移动到行尾
   (define-key evil-normal-state-map (kbd "C-e") 'move-end-of-line)
@@ -598,38 +618,7 @@ you should place your code here."
 
 (require 'org-pomodoro)
 
-(setq load-path (cons (file-truename "~/.emacs.d/") load-path))
 
-(with-eval-after-load 'pyim
-  (require 'pyim)
-  (require 'posframe)
-  (require 'liberime)
-
-  (setq default-input-method "pyim")
-  ;;(setq pyim-page-tooltip 'posframe)
-  (setq pyim-page-tooltip "minibuffer")
-  (setq pyim-page-length 9)
-
-  ;; 加快pyim缓冲速度
-  (setq pyim-dcache-backend 'pyim-dregcache)
-
-  ;; 补全框模式改为垂直模式
-  (setq pyim-page-style 'vertical)
-
-  (liberime-start "/Library/Input Methods/Squirrel.app/Contents/SharedSupport" (file-truename "~/.emacs.d/pyim/rime/"))
-  (liberime-select-schema "luna_pinyin_simp")
-  (setq pyim-default-scheme 'rime-quanpin)
-
-  (setq-default pyim-english-input-switch-functions
-                '(probe-function1 probe-function2 probe-function3))
-
-  (use-package pyim
-    :ensure nil
-    :demand t
-    :bind
-    (("M-j" . pyim-convert-string-at-point) ;与 pyim-probe-dynamic-english 配合
-     ("C-;" . pyim-delete-word-from-personal-buffer)))
-  )
 
 
 );; =====================ATTENTION: CLOSING OF USER-CONFIG==============================
