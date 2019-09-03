@@ -81,6 +81,7 @@ values."
                                       hide-mode-line
                                       doom-themes
                                       helm-ag
+                                      posframe
                                       )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -374,8 +375,19 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
 
-;;;; -- cofig fctix
 
+(defmacro k-time (&rest body)
+  "Measure and return the time it takes evaluating BODY."
+  `(let ((time (current-time)))
+     ,@body
+     (float-time (time-since time))))
+
+(defvar k-gc-timer
+   (run-with-idle-timer 15 t
+                        (lambda ()
+                          (message "Garbage Collector has run for %.06fsec"
+                                   (k-time (garbage-collect))))))
+;; -- cofig fctix
 (with-eval-after-load 'fcitx
   ;; Make sure the following comes before `(fcitx-aggressive-setup)’
   (setq fcitx-active-evil-states '(insert emacs hybrid))
@@ -587,18 +599,39 @@ you should place your code here."
 (require 'org-pomodoro)
 
 (setq load-path (cons (file-truename "~/.emacs.d/") load-path))
-(module-load-p "~/.emacs.d/liberime.so")
-(require 'pyim)
-(require 'posframe)
-(require 'liberime)
 
-(setq default-input-method "pyim")
-(setq pyim-page-tooltip 'posframe)
-(setq pyim-page-length 9)
+(with-eval-after-load 'pyim
+  (require 'pyim)
+  (require 'posframe)
+  (require 'liberime)
 
-(liberime-start "/Library/Input Methods/Squirrel.app/Contents/SharedSupport" (file-truename "~/.emacs.d/pyim/rime/"))
-(liberime-select-schema "luna_pinyin_simp")
-(setq pyim-default-scheme 'rime-quanpin)
+  (setq default-input-method "pyim")
+  ;;(setq pyim-page-tooltip 'posframe)
+  (setq pyim-page-tooltip "minibuffer")
+  (setq pyim-page-length 9)
+
+  ;; 加快pyim缓冲速度
+  (setq pyim-dcache-backend 'pyim-dregcache)
+
+  ;; 补全框模式改为垂直模式
+  (setq pyim-page-style 'vertical)
+
+  (liberime-start "/Library/Input Methods/Squirrel.app/Contents/SharedSupport" (file-truename "~/.emacs.d/pyim/rime/"))
+  (liberime-select-schema "luna_pinyin_simp")
+  (setq pyim-default-scheme 'rime-quanpin)
+
+  (setq-default pyim-english-input-switch-functions
+                '(probe-function1 probe-function2 probe-function3))
+
+  (use-package pyim
+    :ensure nil
+    :demand t
+    :bind
+    (("M-j" . pyim-convert-string-at-point) ;与 pyim-probe-dynamic-english 配合
+     ("C-;" . pyim-delete-word-from-personal-buffer)))
+  )
+
+
 );; =====================ATTENTION: CLOSING OF USER-CONFIG==============================
 
 (custom-set-variables
