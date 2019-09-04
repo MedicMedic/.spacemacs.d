@@ -19,6 +19,7 @@ values."
    ;; listed in `dotspacemacs-configuration-layers'. `nil' disable the lazy
    ;; installation feature and you have to explicitly list a layer in the
    ;; variable `dotspacemacs-configuration-layers' to install it.
+
    ;; (default 'unused)
    dotspacemacs-enable-lazy-installation 'unused
    ;; If non-nil then Spacemacs will ask for confirmation before installing
@@ -58,6 +59,7 @@ values."
            java-backend 'lsp)
      (chinese :variables
               chinese-enable-fcitx t)
+     c-c++
      ;; version-control
      )
    ;; List of additional packages that will be installed without being
@@ -67,13 +69,15 @@ values."
    dotspacemacs-additional-packages '(
                                       use-package
                                       tree-mode
-                                      lsp-ui
-                                      lsp-mode
-                                      lsp-java
-                                      dash-functional
-                                      dap-mode
-                                      company-lsp
-                                      bui
+                                      ;; ---------lsp-java dependent package-------
+                                      ;; lsp-ui
+                                      ;; lsp-mode
+                                      ;; lsp-java
+                                      ;; dash-functional
+                                      ;; dap-mode
+                                      ;; company-lsp
+                                      ;; bui
+                                      ;; ---------------------------------------
 			                         	      ivy-posframe
                                       all-the-icons
                                       all-the-icons-dired
@@ -376,6 +380,7 @@ explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
 
 ;; -----------------------One day, may be I will come back to use pyim with rime--------------------------------------------
+
   ;; (setq load-path (cons (file-truename "~/.emacs.d/") load-path))
 
   ;; (require 'pyim)
@@ -395,8 +400,46 @@ you should place your code here."
   ;; (liberime-start "/Library/Input Methods/Squirrel.app/Contents/SharedSupport" (file-truename "~/.emacs.d/pyim/rime/"))
   ;; (liberime-select-schema "luna_pinyin_simp")
   ;; (setq pyim-default-scheme 'rime-quanpin)
-;; -------------------------------------------------------------------------------------------------------------------------
+  ;; -------------------------------------------------------------------------------------------------------------------------
 
+;; ------------------------- lsp-java configuration----------------------------------
+;; (require 'cc-mode)
+
+;; (condition-case nil
+;;     (require 'use-package)
+;;   (file-error
+;;    (require 'package)
+;;    (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+;;    (package-initialize)
+;;    (package-refresh-contents)
+;;    (package-install 'use-package)
+;;    (require 'use-package)))
+
+;; (use-package projectile :ensure t)
+;; (use-package yasnippet :ensure t)
+;; (use-package lsp-mode :ensure t)
+;; (use-package hydra :ensure t)
+;; (use-package company-lsp :ensure t)
+;; (use-package lsp-ui :ensure t)
+;; (use-package lsp-java :ensure t :after lsp
+;;   :config (add-hook 'java-mode-hook 'lsp))
+
+;; (use-package dap-mode
+;;   :ensure t :after lsp-mode
+;;   :config
+;;   (dap-mode t)
+;;   (dap-ui-mode t))
+
+;; (use-package dap-java :after (lsp-java))
+
+;; (require 'lsp-java-boot)
+
+;; ;; to enable the lenses
+;; (add-hook 'lsp-mode-hook #'lsp-lens-mode)
+;; (add-hook 'java-mode-hook #'lsp-java-boot-lens-mode)
+
+;; (setq lsp-ui-sideline-update-mode 'point)
+;; ------------------------- lsp-java configuration closed---------------------------------
 (defmacro k-time (&rest body)
   "Measure and return the time it takes evaluating BODY."
   `(let ((time (current-time)))
@@ -487,42 +530,7 @@ you should place your code here."
       (insert (format "[[%s%s]]" prefix imagename))
     (insert (format "![%s](%s%s)" imagename prefix imagename))))
 
-(require 'cc-mode)
 
-(condition-case nil
-    (require 'use-package)
-  (file-error
-   (require 'package)
-   (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-   (package-initialize)
-   (package-refresh-contents)
-   (package-install 'use-package)
-   (require 'use-package)))
-
-(use-package projectile :ensure t)
-(use-package yasnippet :ensure t)
-(use-package lsp-mode :ensure t)
-(use-package hydra :ensure t)
-(use-package company-lsp :ensure t)
-(use-package lsp-ui :ensure t)
-(use-package lsp-java :ensure t :after lsp
-  :config (add-hook 'java-mode-hook 'lsp))
-
-(use-package dap-mode
-  :ensure t :after lsp-mode
-  :config
-  (dap-mode t)
-  (dap-ui-mode t))
-
-(use-package dap-java :after (lsp-java))
-
-(require 'lsp-java-boot)
-
-;; to enable the lenses
-(add-hook 'lsp-mode-hook #'lsp-lens-mode)
-(add-hook 'java-mode-hook #'lsp-java-boot-lens-mode)
-
-(setq lsp-ui-sideline-update-mode 'point)
 
 ;; automatically close the minibuffer when it losed focus
 (defun stop-using-minibuffer ()
@@ -619,7 +627,26 @@ you should place your code here."
 (require 'org-pomodoro)
 
 
-
+;;----------------------meghanada java configuration-------------------------
+(require 'meghanada)
+(add-hook 'java-mode-hook
+          (lambda ()
+            ;; meghanada-mode on
+            (meghanada-mode t)
+            ;; enable telemetry
+            (meghanada-telemetry-enable t)
+            (flycheck-mode +1)
+            (setq c-basic-offset 2)
+            ;; use code format
+            (add-hook 'before-save-hook 'meghanada-code-beautify-before-save)))
+(cond
+ ((eq system-type 'windows-nt)
+  (setq meghanada-java-path (expand-file-name "bin/java.exe" (getenv "JAVA_HOME")))
+  (setq meghanada-maven-path "mvn.cmd"))
+ (t
+  (setq meghanada-java-path "java")
+  (setq meghanada-maven-path "mvn")))
+;;----------------------meghanada java configuration closed------------------------
 
 );; =====================ATTENTION: CLOSING OF USER-CONFIG==============================
 
