@@ -86,6 +86,7 @@ values."
                                       doom-themes
                                       helm-ag
                                       posframe
+                                      org-alert
                                       )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -499,8 +500,53 @@ you should place your code here."
 
   ;; enable speed-command to optimize org GTD
   (setq evil-org-key-theme '(textobjects navigation additional insert todo))
+  
+  (setq org-image-actual-width 40)
 
-  )
+
+  ;; add OS notification for org-pormodor
+  (defun notify-osx (title message) 
+    (call-process "terminal-notifier" 
+                  nil 0 nil		 
+                  "-group" "Emacs"		 
+                  "-title" title
+                  "-sender" "org.gnu.Emacs"		 
+                  "-message" message
+                  "-activate" "org.gnu.Emacs"))
+
+
+    (require 'org-pomodoro)
+
+
+  (add-hook 'org-pomodoro-finished-hook
+            (lambda ()
+              (notify-osx "Pomodoro completed!" "️Time for a break.")))
+  (add-hook 'org-pomodoro-break-finished-hook
+            (lambda ()
+              (notify-osx "Pomodoro Short Break Finished" "Ready for Another?")))
+  (add-hook 'org-pomodoro-long-break-finished-hook
+            (lambda ()
+              (notify-osx "Pomodoro Long Break Finished" "Ready for Another?")))
+  (add-hook 'org-pomodoro-killed-hook
+            (lambda ()
+              (notify-osx "Pomodoro Killed" "One does not simply kill a pomodoro!")))
+
+  ;; config org-agenda
+  (setq org-agenda-files '("~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org"))
+  (setq org-capture-templates
+        '(("t" "Todo" entry (file+headline "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/gtd.org" "工作安排")
+           "* TODO [#B] %?\n  %i\n"
+           :empty-lines 1)))
+  (setq org-agenda-custom-commands
+        '(
+          ("w" . "任务安排")
+          ("wa" "重要且紧急的任务" tags-todo "+PRIORITY=\"A\"")
+          ("wb" "重要且不紧急的任务" tags-todo "-Weekly-Monthly-Daily+PRIORITY=\"B\"")
+          ("wc" "不重要且紧急的任务" tags-todo "+PRIORITY=\"C\"")
+          )
+        )
+  
+)
 
 
 (defun arthurMao/screenCapture (basename)
@@ -601,30 +647,6 @@ you should place your code here."
   (doom-themes-org-config))
 
 
-;; add OS notification for org-pormodor
-(defun notify-osx (title message) 
-	(call-process "terminal-notifier" 
-                nil 0 nil		 
-                "-group" "Emacs"		 
-                "-title" title
-                "-sender" "org.gnu.Emacs"		 
-                "-message" message
-                "-activate" "org.gnu.Emacs"))
-;;;Time for a break.
-(add-hook 'org-pomodoro-finished-hook
-          (lambda ()
-            (notify-osx "Pomodoro completed!" "️Time for a break.")))
-(add-hook 'org-pomodoro-break-finished-hook
-          (lambda ()
-            (notify-osx "Pomodoro Short Break Finished" "Ready for Another?")))
-(add-hook 'org-pomodoro-long-break-finished-hook
-          (lambda ()
-            (notify-osx "Pomodoro Long Break Finished" "Ready for Another?")))
-(add-hook 'org-pomodoro-killed-hook
-          (lambda ()
-            (notify-osx "Pomodoro Killed" "One does not simply kill a pomodoro!")))
-
-(require 'org-pomodoro)
 
 
 ;;----------------------meghanada java configuration-------------------------
@@ -633,6 +655,7 @@ you should place your code here."
           (lambda ()
             ;; meghanada-mode on
             (meghanada-mode t)
+
             ;; enable telemetry
             (meghanada-telemetry-enable t)
             (flycheck-mode +1)
