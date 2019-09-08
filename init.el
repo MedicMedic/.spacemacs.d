@@ -86,7 +86,8 @@ values."
                                       doom-themes
                                       helm-ag
                                       posframe
-                                      org-alert
+                                      calfw
+                                      calfw-org
                                       )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -686,6 +687,31 @@ you should place your code here."
 ;; start using expand region
 (require 'expand-region)
 (global-set-key (kbd "C-=") 'er/expand-region)
+
+(require 'appt)
+  (setq appt-time-msg-list nil)    ;; clear existing appt list
+  (setq appt-display-interval '60)  ;; warn every 5 minutes from t - appt-message-warning-time
+  (setq
+   appt-message-warning-time '10  ;; send first warning 15 minutes before appointment
+   appt-display-mode-line nil     ;; don't show in the modeline
+   appt-display-format 'window)   ;; pass warnings to the designated window function
+  (appt-activate 1)                ;; activate appointment notification
+  (display-time)                   ;; activate time display
+
+  (org-agenda-to-appt)             ;; generate the appt list from org agenda files on emacs launch
+  (run-at-time "24:01" 3600 'org-agenda-to-appt)           ;; update appt list hourly
+  (add-hook 'org-finalize-agenda-hook 'org-agenda-to-appt) ;; update appt list on agenda view
+
+  (defun my-appt-display (min-to-app new-time msg)
+    (notify-osx
+     (format "%s in %s minutes" msg min-to-app)    ;; passed to -title in terminal-notifier call
+     (format "%s" msg)))                                ;; passed to -message in terminal-notifier call
+  (setq appt-disp-window-function (function my-appt-display))
+
+  ;;(setq org-agenda-skip-scheduled-if-deadline-is-shown 'repeated-after-deadline)
+
+  (require 'calfw)
+  (require 'calfw-org)
 );; =====================ATTENTION: CLOSING OF USER-CONFIG==============================
 
 (custom-set-variables
