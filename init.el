@@ -533,10 +533,22 @@ you should place your code here."
 
   ;; config org-agenda
   (setq org-agenda-files '("~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org"))
+
+  ;; make notes capture faster
   (setq org-capture-templates
         '(("t" "Todo" entry (file+headline "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/gtd.org" "工作安排")
-           "* TODO [#B] %?\n  %i\n"
-           :empty-lines 1)))
+           "* TODO [#B] %?\n  %i\n %U"
+           :empty-lines 1)
+          ("z" "折腾" entry  (file+headline "/Users/anthony/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/折腾.org" "折腾")
+           "* TODO %?\n  %i\n %U"
+           :empty-lines 1)
+          ("b" "购物" entry  (file+headline "/Users/anthony/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/购物清单.org" "购物清单")
+           "* TODO %?\n  %i\n %U"
+           :empty-lines 1)
+          )
+        )
+
+
   (setq org-agenda-custom-commands
         '(
           ("w" . "任务安排")
@@ -671,6 +683,9 @@ you should place your code here."
   (setq meghanada-maven-path "mvn")))
 ;;----------------------meghanada java configuration closed------------------------
 
+;; start using expand region
+(require 'expand-region)
+(global-set-key (kbd "C-=") 'er/expand-region)
 );; =====================ATTENTION: CLOSING OF USER-CONFIG==============================
 
 (custom-set-variables
