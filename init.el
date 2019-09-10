@@ -8,6 +8,7 @@ You should not put any user code in this function besides modifying the variable
 values."
   (setq-default
    ;; Base distribution to use. This is a layer contained in the directory
+
    ;; `+distribution'. For now available distributions are `spacemacs-base'
    ;; or `spacemacs'. (default 'spacemacs)
    dotspacemacs-distribution 'spacemacs
@@ -70,13 +71,13 @@ values."
                                       use-package
                                       tree-mode
                                       ;; ---------lsp-java dependent package-------
-                                      ;; lsp-ui
-                                      ;; lsp-mode
-                                      ;; lsp-java
-                                      ;; dash-functional
-                                      ;; dap-mode
-                                      ;; company-lsp
-                                      ;; bui
+                                      lsp-ui
+                                      lsp-mode
+                                      lsp-java
+                                      dash-functional
+                                      dap-mode
+                                      company-lsp
+                                      bui
                                       ;; ---------------------------------------
 			                         	      ivy-posframe
                                       all-the-icons
@@ -86,8 +87,11 @@ values."
                                       doom-themes
                                       helm-ag
                                       posframe
-                                      calfw
-                                      calfw-org
+                                      ;;calfw
+                                     ;; calfw-org
+                                      quickrun
+                                      ;; realgud
+                                      ;; realgud-jdb
                                       )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -404,43 +408,65 @@ you should place your code here."
   ;; (setq pyim-default-scheme 'rime-quanpin)
   ;; -------------------------------------------------------------------------------------------------------------------------
 
+  ;;----------------------meghanada java configuration-------------------------
+  ;; (require 'meghanada)
+  ;; (add-hook 'java-mode-hook
+  ;;           (lambda ()
+  ;;             ;; meghanada-mode on
+  ;;             (meghanada-mode t)
+
+  ;;             ;; enable telemetry
+  ;;             (meghanada-telemetry-enable t)
+  ;;             (flycheck-mode +1)
+  ;;             (setq c-basic-offset 2)
+  ;;             ;; use code format
+  ;;             (add-hook 'before-save-hook 'meghanada-code-beautify-before-save)))
+  ;; (cond
+  ;;  ((eq system-type 'windows-nt)
+  ;;   (setq meghanada-java-path (expand-file-name "bin/java.exe" (getenv "JAVA_HOME")))
+  ;;   (setq meghanada-maven-path "mvn.cmd"))
+  ;;  (t
+  ;;   (setq meghanada-java-path "java")
+  ;;   (setq meghanada-maven-path "mvn")))
+  ;;----------------------meghanada java configuration closed------------------------
+
 ;; ------------------------- lsp-java configuration----------------------------------
-;; (require 'cc-mode)
+(require 'cc-mode)
 
-;; (condition-case nil
-;;     (require 'use-package)
-;;   (file-error
-;;    (require 'package)
-;;    (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-;;    (package-initialize)
-;;    (package-refresh-contents)
-;;    (package-install 'use-package)
-;;    (require 'use-package)))
+(condition-case nil
+    (require 'use-package)
+  (file-error
+   (require 'package)
+   (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+   (package-initialize)
+   (package-refresh-contents)
+   (package-install 'use-package)
+   (require 'use-package)))
 
-;; (use-package projectile :ensure t)
-;; (use-package yasnippet :ensure t)
-;; (use-package lsp-mode :ensure t)
-;; (use-package hydra :ensure t)
-;; (use-package company-lsp :ensure t)
-;; (use-package lsp-ui :ensure t)
-;; (use-package lsp-java :ensure t :after lsp
-;;   :config (add-hook 'java-mode-hook 'lsp))
+(use-package projectile :ensure t)
+(use-package yasnippet :ensure t)
+(use-package lsp-mode :ensure t)
+(use-package hydra :ensure t)
+(use-package company-lsp :ensure t)
+(use-package lsp-ui :ensure t)
+(use-package lsp-java :ensure t :after lsp
+  :config (add-hook 'java-mode-hook 'lsp))
 
-;; (use-package dap-mode
-;;   :ensure t :after lsp-mode
-;;   :config
-;;   (dap-mode t)
-;;   (dap-ui-mode t))
+(use-package dap-mode
+  :ensure t :after lsp-mode
+  :config
 
-;; (use-package dap-java :after (lsp-java))
+  (dap-ui-mode t))
 
-;; (require 'lsp-java-boot)
+(use-package dap-java :after (lsp-java))
 
-;; ;; to enable the lenses
-;; (add-hook 'lsp-mode-hook #'lsp-lens-mode)
-;; (add-hook 'java-mode-hook #'lsp-java-boot-lens-mode)
+(require 'lsp-java-boot)
 
-;; (setq lsp-ui-sideline-update-mode 'point)
+;; to enable the lenses
+(add-hook 'lsp-mode-hook #'lsp-lens-mode)
+(add-hook 'java-mode-hook #'lsp-java-boot-lens-mode)
+
+(setq lsp-ui-sideline-update-mode 'point)
 ;; ------------------------- lsp-java configuration closed---------------------------------
 (defmacro k-time (&rest body)
   "Measure and return the time it takes evaluating BODY."
@@ -546,6 +572,9 @@ you should place your code here."
           ("b" "购物" entry  (file+headline "/Users/anthony/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/购物清单.org" "购物清单")
            "* TODO %?\n  %i\n %U"
            :empty-lines 1)
+          ("i" "Inbox" entry  (file+headline "/Users/anthony/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/inbox.org" "Inbox")
+           "* TODO %?\n  %i\n %U"
+           :empty-lines 1)
           )
         )
 
@@ -558,7 +587,7 @@ you should place your code here."
           ("wc" "不重要且紧急的任务" tags-todo "+PRIORITY=\"C\"")
           )
         )
-  
+
 )
 
 
@@ -662,27 +691,6 @@ you should place your code here."
 
 
 
-;;----------------------meghanada java configuration-------------------------
-(require 'meghanada)
-(add-hook 'java-mode-hook
-          (lambda ()
-            ;; meghanada-mode on
-            (meghanada-mode t)
-
-            ;; enable telemetry
-            (meghanada-telemetry-enable t)
-            (flycheck-mode +1)
-            (setq c-basic-offset 2)
-            ;; use code format
-            (add-hook 'before-save-hook 'meghanada-code-beautify-before-save)))
-(cond
- ((eq system-type 'windows-nt)
-  (setq meghanada-java-path (expand-file-name "bin/java.exe" (getenv "JAVA_HOME")))
-  (setq meghanada-maven-path "mvn.cmd"))
- (t
-  (setq meghanada-java-path "java")
-  (setq meghanada-maven-path "mvn")))
-;;----------------------meghanada java configuration closed------------------------
 
 ;; start using expand region
 (require 'expand-region)
@@ -710,8 +718,8 @@ you should place your code here."
 
   ;;(setq org-agenda-skip-scheduled-if-deadline-is-shown 'repeated-after-deadline)
 
-  (require 'calfw)
-  (require 'calfw-org)
+  ;; (require 'realgud)
+  ;; (require 'realgud-jdb)
 );; =====================ATTENTION: CLOSING OF USER-CONFIG==============================
 
 (custom-set-variables
