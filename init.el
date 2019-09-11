@@ -700,7 +700,7 @@ you should place your code here."
   (setq appt-time-msg-list nil)    ;; clear existing appt list
   (setq appt-display-interval '60)  ;; warn every 5 minutes from t - appt-message-warning-time
   (setq
-   appt-message-warning-time '10  ;; send first warning 15 minutes before appointment
+   appt-message-warning-time '5   ;; send first warning 5 minutes before appointment
    appt-display-mode-line nil     ;; don't show in the modeline
    appt-display-format 'window)   ;; pass warnings to the designated window function
   (appt-activate 1)                ;; activate appointment notification
