@@ -33,6 +33,8 @@ values."
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
+     javascript
+     vimscript
      html
      rust
      ;; ----------------------------------------------------------------
@@ -189,6 +191,7 @@ values."
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(doom-vibrant
+                         doom-nord
                          spacemacs-dark
                          spacemacs-light)
    ;; If non nil the cursor color matches the state color in GUI Emacs.
@@ -713,7 +716,7 @@ you should place your code here."
   (defun my-appt-display (min-to-app new-time msg)
     (notify-osx
      (format "%s in %s minutes" msg min-to-app)    ;; passed to -title in terminal-notifier call
-     (format "%s" msg)))                                ;; passed to -message in terminal-notifier call
+     ))                                ;; passed to -message in terminal-notifier call
   (setq appt-disp-window-function (function my-appt-display))
 
   ;;(setq org-agenda-skip-scheduled-if-deadline-is-shown 'repeated-after-deadline)
