@@ -100,9 +100,9 @@ values."
    ;; A list of packages that will not be installed and loaded.
    dotspacemacs-excluded-packages '(
                                     vi-tilde-fringe
-                                    org-projectile org-present orgit orglue
+                                    org-projectile org-present orgit orglue org-brain org-timer org-repo-todo
                                     magit-gh-pulls magit-gitflow
-                                    evil-mc evil-args evil-ediff evil-exchange evil-unimpaired evil-indent-plus
+                                    evil-mc evil-args evil-ediff evil-exchange evil-unimpaired evil-indent-plus evil-lisp-state 
                                     spacemacs-theme
                                     helm-flyspell helm-c-yasnippet ace-jump-helm-line helm-make magithub helm-themes helm-swoop helm-spacemacs-help helm-purpose
                                     company-quickhelp
@@ -115,12 +115,22 @@ values."
                                     spray
                                     lorem-ipsum
                                     symon
+                                    ac-ispell
                                     ace-jump-mode
+                                    auto-dictionary
                                     clang-format
                                     google-translate
+                                    disaster
                                     epic
                                     fancy-battery
                                     nyan-mode
+                                    smeargle
+                                    clean-aindent-mode
+                                    rainbow-delimiters
+                                    highlight-indentation
+                                    eyebrowse
+                                    ws-butler
+                                    flx-ido
                                     )
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
@@ -190,8 +200,9 @@ values."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(doom-vibrant
+   dotspacemacs-themes '(
                          doom-nord
+                         doom-vibrant
                          spacemacs-dark
                          spacemacs-light)
    ;; If non nil the cursor color matches the state color in GUI Emacs.
@@ -381,7 +392,10 @@ before packages are loaded. If you are unsure, you should try in setting them in
 
 
 (defun dotspacemacs/user-config ()
-  "Configuration function for user code.
+  (let(
+       (gc-cons-threshold most-positive-fixnum)
+       (file-name-handler-alist nil))
+      "Configuration function for user code.
 This function is called at the very end of Spacemacs initialization after
 layers configuration.
 This is the place where most of your configurations should be done. Unless it is
@@ -723,7 +737,9 @@ you should place your code here."
 
   ;; (require 'realgud)
   ;; (require 'realgud-jdb)
-);; =====================ATTENTION: CLOSING OF USER-CONFIG==============================
+)
+    )
+;; =====================ATTENTION: CLOSING OF USER-CONFIG==============================
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -741,3 +757,4 @@ you should place your code here."
  )
 (setq custom-file (expand-file-name "custom.el" dotspacemacs-directory))
 (load custom-file 'no-error 'no-message)
+
