@@ -485,6 +485,18 @@ you should place your code here."
 
 (setq lsp-ui-sideline-update-mode 'point)
 ;; ------------------------- lsp-java configuration closed---------------------------------
+
+;; ------------------------ ccls configuration-------------------------
+(use-package lsp-mode :commands lsp)
+(use-package lsp-ui :commands lsp-ui-mode)
+(use-package company-lsp :commands company-lsp)
+
+(use-package ccls
+  :hook ((c-mode c++-mode objc-mode) .
+         (lambda () (require 'ccls) (lsp))))
+
+
+
 (defmacro k-time (&rest body)
   "Measure and return the time it takes evaluating BODY."
   `(let ((time (current-time)))
@@ -717,7 +729,7 @@ you should place your code here."
   (setq appt-time-msg-list nil)    ;; clear existing appt list
   (setq appt-display-interval '60)  ;; warn every 5 minutes from t - appt-message-warning-time
   (setq
-   appt-message-warning-time '5   ;; send first warning 5 minutes before appointment
+   appt-message-warning-time '10   ;; send first warning 5 minutes before appointment
    appt-display-mode-line nil     ;; don't show in the modeline
    appt-display-format 'window)   ;; pass warnings to the designated window function
   (appt-activate 1)                ;; activate appointment notification
@@ -730,6 +742,7 @@ you should place your code here."
   (defun my-appt-display (min-to-app new-time msg)
     (notify-osx
      (format "%s in %s minutes" msg min-to-app)    ;; passed to -title in terminal-notifier call
+     (format "%s" msg)
      ))                                ;; passed to -message in terminal-notifier call
   (setq appt-disp-window-function (function my-appt-display))
 
