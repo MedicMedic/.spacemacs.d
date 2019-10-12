@@ -56,13 +56,17 @@ values."
      ;;        shell-default-position 'bottom)
      spell-checking
      osx
+
      syntax-checking
      emoji
      (java :variables
            java-backend 'lsp)
      (chinese :variables
               chinese-enable-fcitx t)
-     c-c++
+     (c-c++ :variables
+            c-c++-backend 'lsp-ccls)
+     dap
+     lsp
      ;; version-control
      )
    ;; List of additional packages that will be installed without being
@@ -94,13 +98,17 @@ values."
                                       quickrun
                                       ;; realgud
                                       ;; realgud-jdb
+                                      eglot
+                                      ;;
+                                      exec-path-from-shell
+                                      org2ctex
                                       )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
    dotspacemacs-excluded-packages '(
                                     vi-tilde-fringe
-                                    org-projectile org-present orgit orglue org-brain org-timer org-repo-todo
+                                    org-projectile org-present orgit orglue org-timer org-repo-todo org-brain
                                     magit-gh-pulls magit-gitflow
                                     evil-mc evil-args evil-ediff evil-exchange evil-unimpaired evil-indent-plus evil-lisp-state 
                                     spacemacs-theme
@@ -174,7 +182,7 @@ values."
    ;; with `:variables' keyword (similar to layers). Check the editing styles
    ;; section of the documentation for details on available variables.
    ;; (default 'vim)
-   dotspacemacs-editing-style 'vim
+   dotspacemacs-editing-style 'hybrid
    ;; If non nil output loading progress in `*Messages*' buffer. (default nil)
 
    dotspacemacs-verbose-loading nil
@@ -446,7 +454,6 @@ you should place your code here."
   ;;   (setq meghanada-java-path "java")
   ;;   (setq meghanada-maven-path "mvn")))
   ;;----------------------meghanada java configuration closed------------------------
-
 ;; ------------------------- lsp-java configuration----------------------------------
 (require 'cc-mode)
 
@@ -487,16 +494,47 @@ you should place your code here."
 ;; ------------------------- lsp-java configuration closed---------------------------------
 
 ;; ------------------------ ccls configuration-------------------------
+(require 'ccls)
 (use-package lsp-mode :commands lsp)
 (use-package lsp-ui :commands lsp-ui-mode)
 (use-package company-lsp :commands company-lsp)
 
+(use-package lsp-mode
+  :hook (c-mode . lsp)
+  :commands lsp)
+
 (use-package ccls
   :hook ((c-mode c++-mode objc-mode) .
          (lambda () (require 'ccls) (lsp))))
+(setq ccls-executable "/usr/local/Cellar/ccls/0.20190314.1/bin/ccls")
+
+;; set flycheck as default
+(setq lsp-prefer-flymake nil)
+(setq-default flycheck-disabled-checkers '(c/c++-clang c/c++-cppcheck c/c++-gcc))
+
+;; Diagnostics
+(lsp--client-capabilities)
+
+;; Initialization options
+(setq ccls-initialization-options '(:index (:comments 2) :completion (:detailedLabel t)))
+
+;; completion
+(setq company-transformers nil company-lsp-async t company-lsp-cache-candidates nil)
+
+;; semantic highlighting
+(setq ccls-sem-highlight-method 'font-lock)
+;; alternatively, (setq ccls-sem-highlight-method 'overlay)
+
+;; For rainbow semantic highlighting
+(ccls-use-default-rainbow-sem-highlight)
+;; (define-key xref--xref-buffer-mode-map (kbd "M-.") 'xref-find-definitions)
+
+;; (global-set-key (kbd "M-.") 'xref-find-definitions)
 
 
+;;-------------------------ccls configuration closed---------------
 
+;; garbage test
 (defmacro k-time (&rest body)
   "Measure and return the time it takes evaluating BODY."
   `(let ((time (current-time)))
@@ -508,7 +546,7 @@ you should place your code here."
                         (lambda ()
                           (message "Garbage Collector has run for %.06fsec"
                                    (k-time (garbage-collect))))))
-;; -- cofig fctix
+;;-- cofig fctix
 (with-eval-after-load 'fcitx
   ;; Make sure the following comes before `(fcitx-aggressive-setup)’
   (setq fcitx-active-evil-states '(insert emacs hybrid))
@@ -592,7 +630,7 @@ you should place your code here."
 
   ;; make notes capture faster
   (setq org-capture-templates
-        '(("t" "Todo" entry (file+headline "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/gtd.org" "工作安排")
+        '(("t" "Todo" entry (file+headline "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/gtd.org" "Day Plan")
            "* TODO [#B] %?\n  %i\n %U"
            :empty-lines 1)
           ("z" "折腾" entry  (file+headline "/Users/anthony/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/折腾.org" "折腾")
@@ -750,8 +788,68 @@ you should place your code here."
 
   ;; (require 'realgud)
   ;; (require 'realgud-jdb)
-)
-    )
+
+;; change custom group inital state to normal
+  (evil-set-initial-state 'Custom-mode 'normal)
+
+  (global-linum-mode t)
+  ;; (setenv "PATH" (concat (getenv "PATH") ":/Library/TeX/texbin"))
+  ;;
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize))
+;;   ;;-----------------------pdf export config ----------------------------------
+;;   ;; for export latex
+;; (add-to-list 'org-latex-classes
+;; 	     '("ctexart"
+;; "\\documentclass[UTF8,a4paper]{ctexart}"
+;; ;;"\\documentclass[fontset=none,UTF8,a4paper,zihao=-4]{ctexart}"
+;; 	       ("\\section{%s}" . "\\section*{%s}")
+;; 	       ("\\subsection{%s}" . "\\subsection*{%s}")
+;; 	       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+;; 	       ("\\paragraph{%s}" . "\\paragraph*{%s}")
+;; 	       ("\\subparagraph{%s}" . "\\subparagraph*{%s}")
+;; 	       )
+;; 	     )
+;; (add-to-list 'org-latex-classes
+;; 	       '("ctexrep"
+;; "\\documentclass[UTF8,a4paper]{ctexrep}"
+;; 		("\\part{%s}" . "\\part*{%s}")
+;; 		("\\chapter{%s}" . "\\chapter*{%s}")
+;; 		("\\section{%s}" . "\\section*{%s}")
+;; 		("\\subsection{%s}" . "\\subsection*{%s}")
+;; 	       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+;; 	       )
+;; 	       )
+;; (add-to-list 'org-latex-classes
+;; 	       '("ctexbook"
+;; "\\documentclass[UTF8,a4paper]{ctexbook}"
+;; ;;("\\part{%s}" . "\\part*{%s}")
+;; 		("\\chapter{%s}" . "\\chapter*{%s}")
+;; 		("\\section{%s}" . "\\section*{%s}")
+;; 		("\\subsection{%s}" . "\\subsection*{%s}")
+;; 	       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+;; 	       )
+;; 	       )
+;; (add-to-list 'org-latex-classes
+;; 	       '("beamer"
+;; "\\documentclass{beamer}
+;;                \\usepackage[fontset=none,UTF8,a4paper,zihao=-4]{ctex}"
+;; 	       org-beamer-sectioning)
+;; 	       )
+;; (setq org-latex-default-class "ctexart")
+;; (setq org-latex-pdf-process
+;;       '("xelatex -interaction nonstopmode -output-directory %o %f"
+;; "xelatex -interaction nonstopmode -output-directory %o %f"
+;; "xelatex -interaction nonstopmode -output-directory %o %f"))
+
+  ;;-----------------------pdf export config closed----------------------------------
+  (require 'org2ctex)
+  (org2ctex-toggle t)
+  ))
+
+
+
+
 ;; =====================ATTENTION: CLOSING OF USER-CONFIG==============================
 
 (custom-set-variables
