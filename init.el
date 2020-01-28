@@ -67,6 +67,7 @@ values."
             c-c++-backend 'lsp-ccls)
      dap
      lsp
+     csharp
      ;; version-control
      )
    ;; List of additional packages that will be installed without being
@@ -102,6 +103,8 @@ values."
                                       ;;
                                       exec-path-from-shell
                                       org2ctex
+                                      ;; c#
+                                      csharp-mode
                                       )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -210,6 +213,7 @@ values."
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
                          doom-nord
+                         doom-nord-light
                          doom-vibrant
                          spacemacs-dark
                          spacemacs-light)
@@ -453,7 +457,10 @@ you should place your code here."
   ;;  (t
   ;;   (setq meghanada-java-path "java")
   ;;   (setq meghanada-maven-path "mvn")))
-  ;;----------------------meghanada java configuration closed------------------------
+      ;;----------------------meghanada java configuration closed------------------------
+
+      ;; --------------------------omnisharp-mode configuration-----------------------
+      (setq omnisharp-debug t)
 ;; ------------------------- lsp-java configuration----------------------------------
 (require 'cc-mode)
 
@@ -633,7 +640,7 @@ you should place your code here."
         '(("t" "Todo" entry (file+headline "~/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/gtd.org" "Day Plan")
            "* TODO [#B] %?\n  %i\n %U"
            :empty-lines 1)
-          ("z" "折腾" entry  (file+headline "/Users/anthony/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/折腾.org" "折腾")
+          ("z" "折腾" entry  (file+headline "/Users/anthony/orgArchive/折腾.org" "折腾")
            "* TODO %?\n  %i\n %U"
            :empty-lines 1)
           ("b" "购物" entry  (file+headline "/Users/anthony/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/购物清单.org" "购物清单")
@@ -843,8 +850,8 @@ you should place your code here."
 ;; "xelatex -interaction nonstopmode -output-directory %o %f"))
 
   ;;-----------------------pdf export config closed----------------------------------
-  (require 'org2ctex)
-  (org2ctex-toggle t)
+  ;; (require 'org2ctex)
+  ;; (org2ctex-toggle t)
   ))
 
 
